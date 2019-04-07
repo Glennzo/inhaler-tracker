@@ -1,73 +1,59 @@
 //
-//  ViewController.swift
-//  inhalertracker
+//  TodayViewController.swift
+//  inhalertracker-widget
 //
 //  Created by Glenn Tillemans on 07/04/2019.
 //  Copyright © 2019 Magneds B.V. All rights reserved.
 //
 
 import UIKit
+import NotificationCenter
 import HealthKit
 
-class ViewController: UIViewController {
+class TodayViewController: UIViewController, NCWidgetProviding {
     
     @IBOutlet var inhalerCountLabel: UILabel!
     @IBOutlet var inhalerStatusLabel: UILabel!
     @IBOutlet var inhalerStepper: UIStepper!
     
-    var inhalerCount: Int = 1    
+    var inhalerCount: Int = 1
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        authorizeHealthKit()
+        // Do any additional setup after loading the view from its nib.
     }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+        
+    func widgetPerformUpdate(completionHandler: (@escaping (NCUpdateResult) -> Void)) {
+        // Perform any setup necessary in order to update the view.
+        
+        // If an error is encountered, use NCUpdateResult.Failed
+        // If there's no update required, use NCUpdateResult.NoData
+        // If there's an update, use NCUpdateResult.NewData
         
         self.inhalerStatusLabel.text = "\(self.updateInhalerStatus())"
         self.inhalerStepper.value = Double(self.inhalerCount)
-    }
-    
-    private func authorizeHealthKit() {
-        HealthKitHelper.authorizeHealthKit { (authorized, error) in
-            guard authorized else {
-                if let error = error {
-                    print("Error: \(error.localizedDescription)")
-                } else {
-                    print("Error")
-                }
-                return
-            }
-            print("HealthKit Successfully Authorized.")
-        }
+        
+        completionHandler(NCUpdateResult.newData)
     }
     
     private func updateInhalerStatus() -> String {
         if let userDefaults = UserDefaults(suiteName: "group.inhalertracker") {
-            let inhalerVolumeCount: Int = userDefaults.integer(forKey: InhalerHelper.UserDefaultKey.volume.rawValue)
-            let inhalerUseages: Int = userDefaults.integer(forKey: InhalerHelper.UserDefaultKey.useage.rawValue)
-        
+            let inhalerVolumeCount: Int = userDefaults.integer(forKey: "inhalerVolumeCount")
+            let inhalerUseages: Int = userDefaults.integer(forKey: "inhalerUsages")
+            
             return "\(inhalerVolumeCount - inhalerUseages) / \(inhalerVolumeCount)"
         }
         
         return ""
     }
     
+    
     @IBAction func inhalerCountStepper(_ sender: UIStepper) {
         self.inhalerCount = Int(sender.value)
-        self.inhalerCountLabel.text = inhalerCount.description
     }
     
     @IBAction func submitButton(_ sender: Any) {
-        
-        let dateFormatter: DateFormatter = DateFormatter()
-        dateFormatter.dateStyle = .short
-        dateFormatter.timeStyle = .short
-        
-        let dateString: String = dateFormatter.string(from: Date())
-        
+       
         guard let inhalerUsage = HKObjectType.quantityType(forIdentifier: .inhalerUsage) else {
             print("InhalerUsage type not available on this device.")
             return
@@ -77,7 +63,6 @@ class ViewController: UIViewController {
         let dataPoint = HKQuantity(unit: HKUnit(from: "count"), doubleValue: Double(inhalerCount))
         
         // Log to HealthKit
-        print("Logging the following data to HealthKit: \(inhalerCount) puffs at \(dateString)")
         let quantitySample = HKQuantitySample(type: inhalerUsage, quantity: dataPoint, start: Date(), end: Date())
         
         let healthStore = HKHealthStore()
@@ -88,9 +73,9 @@ class ViewController: UIViewController {
                 print ("Successfully saved inhaler usage!")
                 DispatchQueue.main.async {
                     if let userDefaults = UserDefaults(suiteName: "group.inhalertracker") {
-                        var useages: Int = userDefaults.integer(forKey: InhalerHelper.UserDefaultKey.useage.rawValue)
+                        var useages: Int = userDefaults.integer(forKey: "inhalerUsages")
                         useages = useages + self.inhalerCount
-                        userDefaults.set(useages, forKey: InhalerHelper.UserDefaultKey.useage.rawValue)
+                        userDefaults.set(useages, forKey: "inhalerUsages")
                     }
                     self.inhalerCount = 1;
                     self.inhalerCountLabel.text = self.inhalerCount.description
@@ -101,10 +86,4 @@ class ViewController: UIViewController {
         }
     }
     
-    @IBAction func settingsButton(_ sender: Any) {
-        let vc: UIViewController = (self.storyboard?.instantiateViewController(withIdentifier: "SettingsViewController"))!
-        self.navigationController?.present(vc, animated: true, completion: nil)
-    }
-    
 }
-

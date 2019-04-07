@@ -16,17 +16,23 @@ class SettingsViewController: UIViewController {
         super.viewDidLoad()
 
         self.inhalerVolumeTextField.keyboardType = .decimalPad
-        self.inhalerVolumeTextField.text = "\(UserDefaults.standard.value(forKey: InhalerHelper.UserDefaultKey.volume.rawValue) ?? "0")"
+        if let userDefaults = UserDefaults(suiteName: "group.inhalertracker") {
+            self.inhalerVolumeTextField.text = "\(userDefaults.value(forKey: InhalerHelper.UserDefaultKey.volume.rawValue) ?? "0")"
+        }
     }
         
     @IBAction func closeButton(_ sender: Any) {
-        UserDefaults.standard.set(Int(self.inhalerVolumeTextField!.text ?? "0")!, forKey: InhalerHelper.UserDefaultKey.volume.rawValue)
+        if let userDefaults = UserDefaults(suiteName: "group.inhalertracker") {
+            userDefaults.set(Int(self.inhalerVolumeTextField!.text ?? "0")!, forKey: InhalerHelper.UserDefaultKey.volume.rawValue)
+        }
         
         self.dismiss(animated: true, completion: nil)
     }
 
     @IBAction func resetButton(_ sender: Any) {
-        UserDefaults.standard.set(0, forKey: InhalerHelper.UserDefaultKey.useage.rawValue)
+        if let userDefaults = UserDefaults(suiteName: "group.inhalertracker") {
+            userDefaults.set(0, forKey: InhalerHelper.UserDefaultKey.useage.rawValue)
+        }
 
     }
 }
