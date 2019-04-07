@@ -90,6 +90,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     
     @IBAction func inhalerCountStepper(_ sender: UIStepper) {
         self.inhalerCount = Int(sender.value)
+        self.inhalerCountLabel.text = inhalerCount.description
     }
     
     @IBAction func submitButton(_ sender: Any) {
