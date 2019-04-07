@@ -9,6 +9,7 @@
 import UIKit
 import NotificationCenter
 import HealthKit
+import UserNotifications
 
 class TodayViewController: UIViewController, NCWidgetProviding {
     
@@ -47,6 +48,45 @@ class TodayViewController: UIViewController, NCWidgetProviding {
         return ""
     }
     
+    private func checkInhalerStatus() {
+        if let userDefaults = UserDefaults(suiteName: "group.inhalertracker") {
+            let inhalerVolumeCount: Int = userDefaults.integer(forKey: "inhalerVolumeCount")
+            let inhalerUseages: Int = userDefaults.integer(forKey: "inhalerUsages")
+            let inhalerNotification: Int = userDefaults.integer(forKey: "inhalerNotification")
+            
+            let remainingUseages = inhalerVolumeCount - inhalerUseages
+            
+            if (remainingUseages <= inhalerNotification) {
+                sendNotification()
+            }
+        }
+    }
+    
+    private func sendNotification() {
+        var charges = "a few"
+        var identifier = "inhalertracker.notification.id.0"
+        if let userDefaults = UserDefaults(suiteName: "group.inhalertracker") {
+            let inhalerVolumeCount: Int = userDefaults.integer(forKey: "inhalerVolumeCount")
+            let inhalerUseages: Int = userDefaults.integer(forKey: "inhalerUsages")
+            
+            charges = "\(inhalerVolumeCount - inhalerUseages)"
+            identifier = "inhalertracker.notification.id.\(inhalerUseages))"
+        }
+        
+        let content = UNMutableNotificationContent()
+        content.title = "Your Inhaler is almost empty"
+        content.body = "You only have \(charges) charges left from your inhaler. Time to order a new one."
+        content.sound = UNNotificationSound.default
+        
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 60,
+                                                        repeats: false)
+        
+        let request = UNNotificationRequest(identifier: identifier,
+                                            content: content,
+                                            trigger: trigger)
+        
+        UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
+    }
     
     @IBAction func inhalerCountStepper(_ sender: UIStepper) {
         self.inhalerCount = Int(sender.value)
@@ -81,6 +121,8 @@ class TodayViewController: UIViewController, NCWidgetProviding {
                     self.inhalerCountLabel.text = self.inhalerCount.description
                     self.inhalerStatusLabel.text = "\(self.updateInhalerStatus())"
                     self.inhalerStepper.value = Double(self.inhalerCount)
+                    
+                    self.checkInhalerStatus()
                 }
             }
         }

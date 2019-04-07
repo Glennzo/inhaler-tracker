@@ -88,6 +88,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="202" y="125"/>
         </scene>
         <!--Settings View Controller-->
         <scene sceneID="Sgl-LI-kh6">
@@ -135,28 +136,57 @@
                                     </navigationItem>
                                 </items>
                             </navigationBar>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Notification on" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="T0d-DR-KOU">
+                                <rect key="frame" x="20" y="165" width="112" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Lkl-cy-PXe">
+                                <rect key="frame" x="147" y="160.5" width="50" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="50" id="8TH-qU-7GM"/>
+                                </constraints>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="charges left" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="poG-gC-RzV">
+                                <rect key="frame" x="212" y="165" width="91" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="wmm-4v-cSS" firstAttribute="leading" secondItem="Bzl-l1-V3m" secondAttribute="trailing" constant="15" id="1QV-vf-BR6"/>
+                            <constraint firstItem="Lkl-cy-PXe" firstAttribute="centerY" secondItem="T0d-DR-KOU" secondAttribute="centerY" id="2W8-L3-wCy"/>
                             <constraint firstItem="PaA-aS-pU2" firstAttribute="trailing" secondItem="xij-Pp-Cjx" secondAttribute="trailing" id="6kk-kn-7mG"/>
                             <constraint firstItem="PaA-aS-pU2" firstAttribute="top" secondItem="xij-Pp-Cjx" secondAttribute="top" id="AEl-Jn-pPQ"/>
                             <constraint firstItem="W0J-EE-ohy" firstAttribute="top" secondItem="PaA-aS-pU2" secondAttribute="bottom" constant="30" id="Dog-fA-uov"/>
                             <constraint firstItem="wmm-4v-cSS" firstAttribute="centerY" secondItem="Bzl-l1-V3m" secondAttribute="centerY" id="QuX-LM-sYY"/>
+                            <constraint firstItem="Lkl-cy-PXe" firstAttribute="centerY" secondItem="T0d-DR-KOU" secondAttribute="centerY" id="RY8-kz-ej0"/>
                             <constraint firstItem="Bzl-l1-V3m" firstAttribute="centerY" secondItem="W0J-EE-ohy" secondAttribute="centerY" id="WNI-nC-6jQ"/>
+                            <constraint firstItem="poG-gC-RzV" firstAttribute="centerY" secondItem="T0d-DR-KOU" secondAttribute="centerY" id="Xlg-3R-NqG"/>
                             <constraint firstItem="Bzl-l1-V3m" firstAttribute="leading" secondItem="W0J-EE-ohy" secondAttribute="trailing" constant="15" id="Ycz-dC-x6D"/>
+                            <constraint firstItem="T0d-DR-KOU" firstAttribute="leading" secondItem="xij-Pp-Cjx" secondAttribute="leading" constant="20" id="Ze2-PJ-00R"/>
                             <constraint firstItem="W0J-EE-ohy" firstAttribute="leading" secondItem="xij-Pp-Cjx" secondAttribute="leading" constant="20" id="ccA-Ll-SYm"/>
+                            <constraint firstItem="poG-gC-RzV" firstAttribute="leading" secondItem="Lkl-cy-PXe" secondAttribute="trailing" constant="15" id="he9-Xg-bYI"/>
+                            <constraint firstItem="T0d-DR-KOU" firstAttribute="top" secondItem="W0J-EE-ohy" secondAttribute="bottom" constant="50" id="s2U-iG-0zT"/>
+                            <constraint firstItem="Lkl-cy-PXe" firstAttribute="leading" secondItem="T0d-DR-KOU" secondAttribute="trailing" constant="15" id="wVo-bx-hrI"/>
                             <constraint firstItem="PaA-aS-pU2" firstAttribute="leading" secondItem="xij-Pp-Cjx" secondAttribute="leading" id="zJ2-wL-uAM"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="xij-Pp-Cjx"/>
                     </view>
                     <connections>
+                        <outlet property="inhalerNotificationTextField" destination="Lkl-cy-PXe" id="GGg-hY-fd5"/>
                         <outlet property="inhalerVolumeTextField" destination="Bzl-l1-V3m" id="fbn-aq-eCx"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="IIK-p7-K3n" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1047" y="133"/>
+            <point key="canvasLocation" x="1045.5999999999999" y="124.58770614692655"/>
         </scene>
     </scenes>
 </document>

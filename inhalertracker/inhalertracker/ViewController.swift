@@ -8,6 +8,7 @@
 
 import UIKit
 import HealthKit
+import UserNotifications
 
 class ViewController: UIViewController {
     
@@ -21,6 +22,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         
         authorizeHealthKit()
+        authorizeNotifications()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -44,6 +46,22 @@ class ViewController: UIViewController {
         }
     }
     
+    private func authorizeNotifications() {
+        let options: UNAuthorizationOptions = [.alert, .sound];
+
+        UNUserNotificationCenter.current().requestAuthorization(options: options) { (granted, error) in
+            guard granted else {
+                if let error = error {
+                    print("Error: \(error.localizedDescription)")
+                } else {
+                    print("Error")
+                }
+                return
+            }
+            print("Notifications Sucessfully Authorized.")
+        }
+    }
+    
     private func updateInhalerStatus() -> String {
         if let userDefaults = UserDefaults(suiteName: "group.inhalertracker") {
             let inhalerVolumeCount: Int = userDefaults.integer(forKey: InhalerHelper.UserDefaultKey.volume.rawValue)
@@ -53,6 +71,46 @@ class ViewController: UIViewController {
         }
         
         return ""
+    }
+    
+    private func checkInhalerStatus() {
+        if let userDefaults = UserDefaults(suiteName: "group.inhalertracker") {
+            let inhalerVolumeCount: Int = userDefaults.integer(forKey: InhalerHelper.UserDefaultKey.volume.rawValue)
+            let inhalerUseages: Int = userDefaults.integer(forKey: InhalerHelper.UserDefaultKey.useage.rawValue)
+            let inhalerNotification: Int = userDefaults.integer(forKey: InhalerHelper.UserDefaultKey.notification.rawValue)
+
+            let remainingUseages = inhalerVolumeCount - inhalerUseages
+            
+            if (remainingUseages <= inhalerNotification) {
+                sendNotification()
+            }
+        }
+    }
+    
+    private func sendNotification() {
+        var charges = "a few"
+        var identifier = "inhalertracker.notification.id.0"
+        if let userDefaults = UserDefaults(suiteName: "group.inhalertracker") {
+            let inhalerVolumeCount: Int = userDefaults.integer(forKey: InhalerHelper.UserDefaultKey.volume.rawValue)
+            let inhalerUseages: Int = userDefaults.integer(forKey: InhalerHelper.UserDefaultKey.useage.rawValue)
+            
+            charges = "\(inhalerVolumeCount - inhalerUseages)"
+            identifier = "inhalertracker.notification.id.\(inhalerUseages))"
+        }
+        
+        let content = UNMutableNotificationContent()
+        content.title = "Your Inhaler is almost empty"
+        content.body = "You only have \(charges) charges left from your inhaler. Time to order a new one."
+        content.sound = UNNotificationSound.default
+        
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 60,
+                                                        repeats: false)
+        
+        let request = UNNotificationRequest(identifier: identifier,
+                                            content: content,
+                                            trigger: trigger)
+        
+        UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
     }
     
     @IBAction func inhalerCountStepper(_ sender: UIStepper) {
@@ -96,6 +154,8 @@ class ViewController: UIViewController {
                     self.inhalerCountLabel.text = self.inhalerCount.description
                     self.inhalerStatusLabel.text = "\(self.updateInhalerStatus())"
                     self.inhalerStepper.value = Double(self.inhalerCount)
+                    
+                    self.checkInhalerStatus()
                 }
             }
         }

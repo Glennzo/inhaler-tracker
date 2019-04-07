@@ -13,5 +13,6 @@ public class InhalerHelper {
     public enum UserDefaultKey: String {
         case volume = "inhalerVolumeCount"
         case useage = "inhalerUsages"
+        case notification = "inhalerNotification"
     }
 }
