@@ -12,6 +12,8 @@ import HealthKit
 class ViewController: UIViewController {
     
     @IBOutlet var inhalerCountLabel: UILabel!
+    @IBOutlet var inhalerStatusLabel: UILabel!
+    @IBOutlet var inhalerStepper: UIStepper!
     
     var inhalerCount: Int = 1    
     
@@ -19,6 +21,13 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         
         authorizeHealthKit()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        self.inhalerStatusLabel.text = "\(self.updateInhalerStatus())"
+        self.inhalerStepper.value = Double(self.inhalerCount)
     }
     
     private func authorizeHealthKit() {
@@ -35,9 +44,17 @@ class ViewController: UIViewController {
         }
     }
     
+    private func updateInhalerStatus() -> String {
+        let inhalerVolumeCount: Int = UserDefaults.standard.integer(forKey: InhalerHelper.UserDefaultKey.volume.rawValue)
+        let inhalerUseages: Int = UserDefaults.standard.integer(forKey: InhalerHelper.UserDefaultKey.useage.rawValue)
+        
+        return "\(inhalerVolumeCount - inhalerUseages) / \(inhalerVolumeCount)"
+    }
+    
     @IBAction func inhalerCountStepper(_ sender: UIStepper) {
         self.inhalerCount = Int(sender.value)
         self.inhalerCountLabel.text = inhalerCount.description
+        self.inhalerStatusLabel.text = "\(self.updateInhalerStatus())"
     }
     
     @IBAction func submitButton(_ sender: Any) {
@@ -67,11 +84,20 @@ class ViewController: UIViewController {
             } else {
                 print ("Successfully saved inhaler usage!")
                 DispatchQueue.main.async {
+                    UserDefaults.standard.set(self.inhalerCount, forKey: InhalerHelper.UserDefaultKey.useage.rawValue)
                     self.inhalerCount = 1;
                     self.inhalerCountLabel.text = self.inhalerCount.description
+                    self.inhalerStatusLabel.text = "\(self.updateInhalerStatus())"
+                    self.inhalerStepper.value = Double(self.inhalerCount)
                 }
             }
         }
     }
+    
+    @IBAction func settingsButton(_ sender: Any) {
+        let vc: UIViewController = (self.storyboard?.instantiateViewController(withIdentifier: "SettingsViewController"))!
+        self.navigationController?.present(vc, animated: true, completion: nil)
+    }
+    
 }
 
